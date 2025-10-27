@@ -181,13 +181,16 @@ async def signup_intern(intern: InternCreate):
     user_data['profile_picture'] = None
     user_data['resume'] = None
     
-    await db.users.insert_one(user_data)
+    result = await db.users.insert_one(user_data)
+    
+    # Fetch the user without MongoDB's _id
+    created_user = await db.users.find_one({"id": user_data['id']}, {"_id": 0})
     
     # Create token
-    token = create_access_token({"sub": user_data['id'], "role": "intern"})
+    token = create_access_token({"sub": created_user['id'], "role": "intern"})
     
-    user_data.pop('password')
-    return {"token": token, "user": user_data}
+    created_user.pop('password')
+    return {"token": token, "user": created_user}
 
 @api_router.post("/auth/signup/employee")
 async def signup_employee(employee: EmployeeCreate):
