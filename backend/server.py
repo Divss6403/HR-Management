@@ -213,10 +213,13 @@ async def signup_employee(employee: EmployeeCreate):
     
     await db.users.insert_one(user_data)
     
-    token = create_access_token({"sub": user_data['id'], "role": "employee"})
+    # Fetch the user without MongoDB's _id
+    created_user = await db.users.find_one({"id": user_data['id']}, {"_id": 0})
     
-    user_data.pop('password')
-    return {"token": token, "user": user_data}
+    token = create_access_token({"sub": created_user['id'], "role": "employee"})
+    
+    created_user.pop('password')
+    return {"token": token, "user": created_user}
 
 @api_router.post("/auth/signup/hr")
 async def signup_hr(hr: HRCreate):
