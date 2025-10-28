@@ -7,6 +7,7 @@ import OnboardingModule from '../components/OnboardingModule';
 import PayrollModule from '../components/PayrollModule';
 import PerformanceModule from '../components/PerformanceModule';
 import AttendanceModule from '../components/AttendanceModule';
+import HRManagement from '../components/HRManagement';
 import '../styles/Dashboard.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
