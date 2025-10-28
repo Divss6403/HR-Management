@@ -29,7 +29,7 @@ const PayrollModule = ({ user, token }) => {
     return <div>Loading payroll information...</div>;
   }
 
-  if (!payroll || !payroll.data) {
+  if (!payroll || !payroll.id) {
     return (
       <div className="payroll-empty">
         <p>No payroll information available yet.</p>
