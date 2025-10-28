@@ -29,7 +29,7 @@ const OnboardingModule = ({ user, token }) => {
     return <div>Loading onboarding information...</div>;
   }
 
-  if (!onboarding || !onboarding.data) {
+  if (!onboarding || !onboarding.id) {
     return (
       <div className="onboarding-empty">
         <p>No onboarding information available yet.</p>
