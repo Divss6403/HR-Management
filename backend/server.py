@@ -627,7 +627,8 @@ async def create_feedback(feedback: Feedback, current_user: dict = Depends(get_c
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.feedback.insert_one(feedback_data)
+    result = await db.feedback.insert_one(feedback_data)
+    feedback_data.pop('_id', None)
     return {"message": "Feedback submitted successfully", "data": feedback_data}
 
 @api_router.get("/performance/feedback/{user_id}")
