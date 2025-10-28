@@ -556,7 +556,8 @@ async def create_goal(goal: PerformanceGoal, current_user: dict = Depends(get_cu
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.goals.insert_one(goal_data)
+    result = await db.goals.insert_one(goal_data)
+    goal_data.pop('_id', None)
     return {"message": "Goal created successfully", "data": goal_data}
 
 @api_router.get("/performance/goals/{user_id}")
