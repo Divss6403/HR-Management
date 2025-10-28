@@ -743,7 +743,8 @@ async def apply_leave(leave: LeaveRequest, current_user: dict = Depends(get_curr
         "applied_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.leaves.insert_one(leave_data)
+    result = await db.leaves.insert_one(leave_data)
+    leave_data.pop('_id', None)
     return {"message": "Leave application submitted successfully", "data": leave_data}
 
 @api_router.get("/attendance/leaves/{user_id}")
