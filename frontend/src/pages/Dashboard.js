@@ -171,6 +171,15 @@ const Dashboard = () => {
           {user.role === 'hr' && (
             <>
               <a 
+                href="#manage" 
+                className={`nav-item ${activeTab === 'manage' ? 'active' : ''}`}
+                onClick={() => setActiveTab('manage')}
+                data-testid="nav-manage"
+              >
+                <span className="nav-icon">⚙️</span>
+                <span>Manage Users</span>
+              </a>
+              <a 
                 href="#employees" 
                 className={`nav-item ${activeTab === 'employees' ? 'active' : ''}`}
                 onClick={() => setActiveTab('employees')}
