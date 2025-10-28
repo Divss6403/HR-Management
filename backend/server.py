@@ -373,6 +373,35 @@ async def get_users(current_user: dict = Depends(get_current_user)):
     elif role == 'employee':
         # Employee can see interns under them
         interns = await db.users.find(
+            {"role": "intern", "mentor_assigned": current_user['id']},
+            {"_id": 0, "password": 0}
+        ).to_list(100)
+        return interns
+    
+    else:
+        # Interns can only see themselves
+        return [current_user]
+
+@api_router.get("/users/{user_id}")
+async def get_user_by_id(user_id: str, current_user: dict = Depends(get_current_user)):
+    # Check permissions
+    role = current_user['role']
+    target_user = await db.users.find_one({"id": user_id}, {"_id": 0, "password": 0})
+    
+    if not target_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Access control
+    if role == 'hr':
+        return target_user
+    elif role == 'employee' and target_user['role'] == 'intern':
+        if target_user.get('mentor_assigned') == current_user['id']:
+            return target_user
+        raise HTTPException(status_code=403, detail="Access denied")
+    elif role == 'intern' and user_id == current_user['id']:
+        return target_user
+    else:
+        raise HTTPException(status_code=403, detail="Access denied")
 
 
 # ==================== ONBOARDING MODULE ====================
