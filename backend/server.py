@@ -373,6 +373,362 @@ async def get_users(current_user: dict = Depends(get_current_user)):
     elif role == 'employee':
         # Employee can see interns under them
         interns = await db.users.find(
+
+
+# ==================== ONBOARDING MODULE ====================
+
+class OnboardingStatus(BaseModel):
+    user_id: str
+    application_status: str = "Under Review"  # Under Review, Selected, Rejected
+    offer_letter: Optional[str] = None
+    onboarding_checklist: List[dict] = []
+    documents_submitted: List[dict] = []
+    background_verification: str = "Pending"  # Pending, In Progress, Completed, Failed
+    welcome_message: str = ""
+    hr_contact: str = ""
+
+@api_router.post("/onboarding/create")
+async def create_onboarding(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] != 'hr':
+        raise HTTPException(status_code=403, detail="Only HR can create onboarding records")
+    
+    onboarding = {
+        "id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "application_status": "Under Review",
+        "offer_letter": None,
+        "onboarding_checklist": [
+            {"item": "Submit ID Proof", "completed": False},
+            {"item": "Submit Resume", "completed": False},
+            {"item": "Submit College ID", "completed": False},
+            {"item": "Complete Background Verification", "completed": False},
+            {"item": "Sign Agreement", "completed": False}
+        ],
+        "documents_submitted": [],
+        "background_verification": "Pending",
+        "welcome_message": "Welcome to our company! We're excited to have you join our team.",
+        "hr_contact": "hr@company.com",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.onboarding.insert_one(onboarding)
+    return {"message": "Onboarding record created", "data": onboarding}
+
+@api_router.get("/onboarding/{user_id}")
+async def get_onboarding(user_id: str, current_user: dict = Depends(get_current_user)):
+    # Check permissions
+    if current_user['role'] not in ['hr'] and current_user['id'] != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    onboarding = await db.onboarding.find_one({"user_id": user_id}, {"_id": 0})
+    if not onboarding:
+        return {"message": "No onboarding record found", "data": None}
+    return onboarding
+
+@api_router.put("/onboarding/update/{user_id}")
+async def update_onboarding(user_id: str, updates: dict, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] != 'hr':
+        raise HTTPException(status_code=403, detail="Only HR can update onboarding")
+    
+    await db.onboarding.update_one(
+        {"user_id": user_id},
+        {"$set": updates}
+    )
+    return {"message": "Onboarding updated successfully"}
+
+
+# ==================== PAYROLL MODULE ====================
+
+class PayrollCreate(BaseModel):
+    user_id: str
+    salary_type: str  # Monthly, One-time
+    amount: float
+    payment_schedule: str  # Monthly, Bi-weekly, etc.
+    bank_account: str
+
+@api_router.post("/payroll/create")
+async def create_payroll(payroll: PayrollCreate, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] != 'hr':
+        raise HTTPException(status_code=403, detail="Only HR can create payroll records")
+    
+    payroll_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": payroll.user_id,
+        "salary_type": payroll.salary_type,
+        "amount": payroll.amount,
+        "payment_schedule": payroll.payment_schedule,
+        "bank_account": payroll.bank_account,
+        "payment_history": [],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.payroll.insert_one(payroll_data)
+    return {"message": "Payroll record created", "data": payroll_data}
+
+@api_router.get("/payroll/{user_id}")
+async def get_payroll(user_id: str, current_user: dict = Depends(get_current_user)):
+    # Check permissions
+    if current_user['role'] not in ['hr'] and current_user['id'] != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    payroll = await db.payroll.find_one({"user_id": user_id}, {"_id": 0})
+    if not payroll:
+        return {"message": "No payroll record found", "data": None}
+    return payroll
+
+@api_router.post("/payroll/add-payment/{user_id}")
+async def add_payment(user_id: str, payment: dict, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] != 'hr':
+        raise HTTPException(status_code=403, detail="Only HR can add payments")
+    
+    payment_record = {
+        "id": str(uuid.uuid4()),
+        "amount": payment.get("amount"),
+        "payment_date": payment.get("payment_date"),
+        "status": payment.get("status", "Paid"),
+        "slip_url": payment.get("slip_url", ""),
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.payroll.update_one(
+        {"user_id": user_id},
+        {"$push": {"payment_history": payment_record}}
+    )
+    return {"message": "Payment added successfully"}
+
+
+# ==================== PERFORMANCE MODULE ====================
+
+class PerformanceGoal(BaseModel):
+    user_id: str
+    title: str
+    description: str
+    target_date: str
+    assigned_by: str
+
+@api_router.post("/performance/goal/create")
+async def create_goal(goal: PerformanceGoal, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] not in ['hr', 'employee']:
+        raise HTTPException(status_code=403, detail="Only HR or Employees can set goals")
+    
+    goal_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": goal.user_id,
+        "title": goal.title,
+        "description": goal.description,
+        "target_date": goal.target_date,
+        "assigned_by": current_user['id'],
+        "status": "In Progress",
+        "completed_date": None,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.goals.insert_one(goal_data)
+    return {"message": "Goal created successfully", "data": goal_data}
+
+@api_router.get("/performance/goals/{user_id}")
+async def get_goals(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] not in ['hr', 'employee'] and current_user['id'] != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    goals = await db.goals.find({"user_id": user_id}, {"_id": 0}).to_list(100)
+    return goals
+
+class Task(BaseModel):
+    user_id: str
+    title: str
+    description: str
+    due_date: str
+    priority: str  # High, Medium, Low
+
+@api_router.post("/performance/task/create")
+async def create_task(task: Task, current_user: dict = Depends(get_current_user)):
+    task_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": task.user_id,
+        "title": task.title,
+        "description": task.description,
+        "due_date": task.due_date,
+        "priority": task.priority,
+        "status": "Pending",
+        "assigned_by": current_user['id'],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.tasks.insert_one(task_data)
+    return {"message": "Task created successfully", "data": task_data}
+
+@api_router.get("/performance/tasks/{user_id}")
+async def get_tasks(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] not in ['hr', 'employee'] and current_user['id'] != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    tasks = await db.tasks.find({"user_id": user_id}, {"_id": 0}).to_list(100)
+    return tasks
+
+@api_router.put("/performance/task/update/{task_id}")
+async def update_task(task_id: str, updates: dict, current_user: dict = Depends(get_current_user)):
+    await db.tasks.update_one(
+        {"id": task_id},
+        {"$set": updates}
+    )
+    return {"message": "Task updated successfully"}
+
+class Feedback(BaseModel):
+    user_id: str
+    feedback_type: str  # Self-Review, Mentor-Review
+    content: str
+    rating: Optional[int] = None
+
+@api_router.post("/performance/feedback/create")
+async def create_feedback(feedback: Feedback, current_user: dict = Depends(get_current_user)):
+    feedback_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": feedback.user_id,
+        "feedback_type": feedback.feedback_type,
+        "content": feedback.content,
+        "rating": feedback.rating,
+        "given_by": current_user['id'],
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.feedback.insert_one(feedback_data)
+    return {"message": "Feedback submitted successfully", "data": feedback_data}
+
+@api_router.get("/performance/feedback/{user_id}")
+async def get_feedback(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] not in ['hr', 'employee'] and current_user['id'] != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    feedbacks = await db.feedback.find({"user_id": user_id}, {"_id": 0}).to_list(100)
+    return feedbacks
+
+
+# ==================== ATTENDANCE MODULE ====================
+
+@api_router.post("/attendance/checkin")
+async def check_in(current_user: dict = Depends(get_current_user)):
+    today = datetime.now(timezone.utc).date().isoformat()
+    
+    # Check if already checked in today
+    existing = await db.attendance.find_one({
+        "user_id": current_user['id'],
+        "date": today
+    })
+    
+    if existing and existing.get('check_in'):
+        raise HTTPException(status_code=400, detail="Already checked in today")
+    
+    attendance = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user['id'],
+        "date": today,
+        "check_in": datetime.now(timezone.utc).isoformat(),
+        "check_out": None,
+        "status": "Present",
+        "hours_worked": 0
+    }
+    
+    await db.attendance.insert_one(attendance)
+    return {"message": "Checked in successfully", "time": attendance['check_in']}
+
+@api_router.post("/attendance/checkout")
+async def check_out(current_user: dict = Depends(get_current_user)):
+    today = datetime.now(timezone.utc).date().isoformat()
+    
+    attendance = await db.attendance.find_one({
+        "user_id": current_user['id'],
+        "date": today
+    })
+    
+    if not attendance:
+        raise HTTPException(status_code=400, detail="No check-in found for today")
+    
+    if attendance.get('check_out'):
+        raise HTTPException(status_code=400, detail="Already checked out today")
+    
+    check_out_time = datetime.now(timezone.utc)
+    check_in_time = datetime.fromisoformat(attendance['check_in'])
+    hours_worked = (check_out_time - check_in_time).total_seconds() / 3600
+    
+    await db.attendance.update_one(
+        {"id": attendance['id']},
+        {"$set": {
+            "check_out": check_out_time.isoformat(),
+            "hours_worked": round(hours_worked, 2)
+        }}
+    )
+    
+    return {"message": "Checked out successfully", "hours_worked": round(hours_worked, 2)}
+
+@api_router.get("/attendance/overview/{user_id}")
+async def get_attendance_overview(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] not in ['hr', 'employee'] and current_user['id'] != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    # Get all attendance records for the user
+    records = await db.attendance.find({"user_id": user_id}, {"_id": 0}).to_list(1000)
+    
+    # Calculate stats
+    total_days = len(records)
+    present_days = len([r for r in records if r.get('status') == 'Present'])
+    total_hours = sum(r.get('hours_worked', 0) for r in records)
+    
+    # Get leaves
+    leaves = await db.leaves.find({"user_id": user_id}, {"_id": 0}).to_list(100)
+    leave_taken = len([l for l in leaves if l.get('status') == 'Approved'])
+    
+    return {
+        "total_days": total_days,
+        "present_days": present_days,
+        "leave_taken": leave_taken,
+        "total_hours": round(total_hours, 2),
+        "attendance_records": records[-30:],  # Last 30 records
+        "attendance_percentage": round((present_days / max(total_days, 1)) * 100, 2)
+    }
+
+class LeaveRequest(BaseModel):
+    start_date: str
+    end_date: str
+    reason: str
+    leave_type: str  # Sick, Casual, Vacation
+
+@api_router.post("/attendance/leave/apply")
+async def apply_leave(leave: LeaveRequest, current_user: dict = Depends(get_current_user)):
+    leave_data = {
+        "id": str(uuid.uuid4()),
+        "user_id": current_user['id'],
+        "start_date": leave.start_date,
+        "end_date": leave.end_date,
+        "reason": leave.reason,
+        "leave_type": leave.leave_type,
+        "status": "Pending",  # Pending, Approved, Rejected
+        "applied_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.leaves.insert_one(leave_data)
+    return {"message": "Leave application submitted successfully", "data": leave_data}
+
+@api_router.get("/attendance/leaves/{user_id}")
+async def get_leaves(user_id: str, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] not in ['hr', 'employee'] and current_user['id'] != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+    
+    leaves = await db.leaves.find({"user_id": user_id}, {"_id": 0}).to_list(100)
+    return leaves
+
+@api_router.put("/attendance/leave/approve/{leave_id}")
+async def approve_leave(leave_id: str, status: str, current_user: dict = Depends(get_current_user)):
+    if current_user['role'] not in ['hr', 'employee']:
+        raise HTTPException(status_code=403, detail="Only HR or Managers can approve leaves")
+    
+    await db.leaves.update_one(
+        {"id": leave_id},
+        {"$set": {"status": status, "approved_by": current_user['id']}}
+    )
+    return {"message": f"Leave {status.lower()} successfully"}
+
+
             {"role": "intern", "mentor_assigned": current_user['id']},
             {"_id": 0, "password": 0}
         ).to_list(100)
