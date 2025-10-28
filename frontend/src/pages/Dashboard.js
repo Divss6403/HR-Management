@@ -225,18 +225,27 @@ const Dashboard = () => {
           </div>
         </header>
 
-        {/* Dashboard Content Based on Role */}
-        {user.role === 'hr' && <HRDashboard stats={stats} users={users} />}
-        {user.role === 'employee' && <EmployeeDashboard stats={stats} users={users} user={user} />}
-        {user.role === 'intern' && (
-          <InternDashboard 
-            user={user} 
-            handlePhotoUpload={handlePhotoUpload}
-            handleResumeUpload={handleResumeUpload}
-            uploadingPhoto={uploadingPhoto}
-            uploadingResume={uploadingResume}
-          />
+        {/* Dashboard Content Based on Role and Active Tab */}
+        {activeTab === 'overview' && (
+          <>
+            {user.role === 'hr' && <HRDashboard stats={stats} users={users} />}
+            {user.role === 'employee' && <EmployeeDashboard stats={stats} users={users} user={user} />}
+            {user.role === 'intern' && (
+              <InternDashboard 
+                user={user} 
+                handlePhotoUpload={handlePhotoUpload}
+                handleResumeUpload={handleResumeUpload}
+                uploadingPhoto={uploadingPhoto}
+                uploadingResume={uploadingResume}
+              />
+            )}
+          </>
         )}
+        
+        {activeTab === 'onboarding' && <OnboardingModule user={user} token={token} />}
+        {activeTab === 'payroll' && <PayrollModule user={user} token={token} />}
+        {activeTab === 'performance' && <PerformanceModule user={user} token={token} />}
+        {activeTab === 'attendance' && <AttendanceModule user={user} token={token} />}
       </main>
     </div>
   );
