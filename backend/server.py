@@ -589,7 +589,8 @@ async def create_task(task: Task, current_user: dict = Depends(get_current_user)
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.tasks.insert_one(task_data)
+    result = await db.tasks.insert_one(task_data)
+    task_data.pop('_id', None)
     return {"message": "Task created successfully", "data": task_data}
 
 @api_router.get("/performance/tasks/{user_id}")
