@@ -256,6 +256,7 @@ const Dashboard = () => {
         {activeTab === 'payroll' && <PayrollModule user={user} token={token} />}
         {activeTab === 'performance' && <PerformanceModule user={user} token={token} />}
         {activeTab === 'attendance' && <AttendanceModule user={user} token={token} />}
+        {activeTab === 'manage' && user.role === 'hr' && <HRManagement token={token} />}
       </main>
     </div>
   );
