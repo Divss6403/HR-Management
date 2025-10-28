@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import OnboardingModule from '../components/OnboardingModule';
+import PayrollModule from '../components/PayrollModule';
+import PerformanceModule from '../components/PerformanceModule';
+import AttendanceModule from '../components/AttendanceModule';
 import '../styles/Dashboard.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -16,6 +20,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [uploadingResume, setUploadingResume] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     fetchData();
