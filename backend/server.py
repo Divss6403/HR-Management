@@ -441,6 +441,9 @@ async def create_onboarding(user_id: str, current_user: dict = Depends(get_curre
     }
     
     await db.onboarding.insert_one(onboarding)
+    
+    # Return without MongoDB _id
+    onboarding.pop('_id', None)
     return {"message": "Onboarding record created", "data": onboarding}
 
 @api_router.get("/onboarding/{user_id}")
