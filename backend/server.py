@@ -494,7 +494,8 @@ async def create_payroll(payroll: PayrollCreate, current_user: dict = Depends(ge
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.payroll.insert_one(payroll_data)
+    result = await db.payroll.insert_one(payroll_data)
+    payroll_data.pop('_id', None)
     return {"message": "Payroll record created", "data": payroll_data}
 
 @api_router.get("/payroll/{user_id}")
