@@ -16,7 +16,8 @@ const OnboardingModule = ({ user, token }) => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const response = await axios.get(`${API}/onboarding/${user.id}`, { headers });
-      setOnboarding(response.data);
+      // Check if response has data property or is direct data
+      setOnboarding(response.data.data || response.data);
     } catch (error) {
       console.error('Error fetching onboarding:', error);
     } finally {
