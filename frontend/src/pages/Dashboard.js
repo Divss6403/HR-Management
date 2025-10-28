@@ -113,28 +113,89 @@ const Dashboard = () => {
         </div>
         
         <nav className="sidebar-nav">
-          <a href="#overview" className="nav-item active" data-testid="nav-overview">
+          <a 
+            href="#overview" 
+            className={`nav-item ${activeTab === 'overview' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overview')}
+            data-testid="nav-overview"
+          >
             <span className="nav-icon">📊</span>
             <span>Overview</span>
           </a>
-          <a href="#profile" className="nav-item" data-testid="nav-profile">
+          <a 
+            href="#profile" 
+            className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+            onClick={() => setActiveTab('profile')}
+            data-testid="nav-profile"
+          >
             <span className="nav-icon">👤</span>
             <span>My Profile</span>
           </a>
+          <a 
+            href="#onboarding" 
+            className={`nav-item ${activeTab === 'onboarding' ? 'active' : ''}`}
+            onClick={() => setActiveTab('onboarding')}
+            data-testid="nav-onboarding"
+          >
+            <span className="nav-icon">📋</span>
+            <span>Onboarding</span>
+          </a>
+          <a 
+            href="#payroll" 
+            className={`nav-item ${activeTab === 'payroll' ? 'active' : ''}`}
+            onClick={() => setActiveTab('payroll')}
+            data-testid="nav-payroll"
+          >
+            <span className="nav-icon">💰</span>
+            <span>Payroll</span>
+          </a>
+          <a 
+            href="#performance" 
+            className={`nav-item ${activeTab === 'performance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('performance')}
+            data-testid="nav-performance"
+          >
+            <span className="nav-icon">📈</span>
+            <span>Performance</span>
+          </a>
+          <a 
+            href="#attendance" 
+            className={`nav-item ${activeTab === 'attendance' ? 'active' : ''}`}
+            onClick={() => setActiveTab('attendance')}
+            data-testid="nav-attendance"
+          >
+            <span className="nav-icon">⏱</span>
+            <span>Attendance</span>
+          </a>
           {user.role === 'hr' && (
             <>
-              <a href="#employees" className="nav-item" data-testid="nav-employees">
+              <a 
+                href="#employees" 
+                className={`nav-item ${activeTab === 'employees' ? 'active' : ''}`}
+                onClick={() => setActiveTab('employees')}
+                data-testid="nav-employees"
+              >
                 <span className="nav-icon">👥</span>
                 <span>All Users</span>
               </a>
-              <a href="#analytics" className="nav-item" data-testid="nav-analytics">
-                <span className="nav-icon">📈</span>
+              <a 
+                href="#analytics" 
+                className={`nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
+                onClick={() => setActiveTab('analytics')}
+                data-testid="nav-analytics"
+              >
+                <span className="nav-icon">📊</span>
                 <span>Analytics</span>
               </a>
             </>
           )}
           {user.role === 'employee' && (
-            <a href="#interns" className="nav-item" data-testid="nav-interns">
+            <a 
+              href="#interns" 
+              className={`nav-item ${activeTab === 'interns' ? 'active' : ''}`}
+              onClick={() => setActiveTab('interns')}
+              data-testid="nav-interns"
+            >
               <span className="nav-icon">🎓</span>
               <span>My Interns</span>
             </a>
