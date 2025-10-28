@@ -665,7 +665,8 @@ async def check_in(current_user: dict = Depends(get_current_user)):
         "hours_worked": 0
     }
     
-    await db.attendance.insert_one(attendance)
+    result = await db.attendance.insert_one(attendance)
+    attendance.pop('_id', None)
     return {"message": "Checked in successfully", "time": attendance['check_in']}
 
 @api_router.post("/attendance/checkout")
