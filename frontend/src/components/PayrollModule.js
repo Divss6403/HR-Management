@@ -16,7 +16,8 @@ const PayrollModule = ({ user, token }) => {
     try {
       const headers = { Authorization: `Bearer ${token}` };
       const response = await axios.get(`${API}/payroll/${user.id}`, { headers });
-      setPayroll(response.data);
+      // Check if response has data property or is direct data
+      setPayroll(response.data.data || response.data);
     } catch (error) {
       console.error('Error fetching payroll:', error);
     } finally {
