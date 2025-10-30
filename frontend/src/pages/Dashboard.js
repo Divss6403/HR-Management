@@ -257,6 +257,7 @@ const Dashboard = () => {
           </>
         )}
         
+        {activeTab === 'profile' && user.role !== 'hr' && <HRInfoModule user={user} token={token} />}
         {activeTab === 'onboarding' && user.role !== 'hr' && <OnboardingModule user={user} token={token} />}
         {activeTab === 'payroll' && <PayrollModule user={user} token={token} />}
         {activeTab === 'performance' && <PerformanceModule user={user} token={token} />}
