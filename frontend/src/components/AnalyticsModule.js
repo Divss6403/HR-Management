@@ -114,7 +114,7 @@ const AnalyticsModule = ({ users }) => {
         <div className="metric-card orange">
           <div className="metric-icon">💰</div>
           <div className="metric-content">
-            <h3>$152K</h3>
+            <h3>₹125.4L</h3>
             <p>Monthly Payroll</p>
             <span className="metric-change negative">+8% from last month</span>
           </div>
