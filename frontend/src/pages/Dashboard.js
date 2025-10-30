@@ -132,15 +132,18 @@ const Dashboard = () => {
             <span className="nav-icon">👤</span>
             <span>My Profile</span>
           </a>
-          <a 
-            href="#onboarding" 
-            className={`nav-item ${activeTab === 'onboarding' ? 'active' : ''}`}
-            onClick={() => setActiveTab('onboarding')}
-            data-testid="nav-onboarding"
-          >
-            <span className="nav-icon">📋</span>
-            <span>Onboarding</span>
-          </a>
+          {/* Onboarding only for intern and employee */}
+          {user.role !== 'hr' && (
+            <a 
+              href="#onboarding" 
+              className={`nav-item ${activeTab === 'onboarding' ? 'active' : ''}`}
+              onClick={() => setActiveTab('onboarding')}
+              data-testid="nav-onboarding"
+            >
+              <span className="nav-icon">📋</span>
+              <span>Onboarding</span>
+            </a>
+          )}
           <a 
             href="#payroll" 
             className={`nav-item ${activeTab === 'payroll' ? 'active' : ''}`}
@@ -252,7 +255,7 @@ const Dashboard = () => {
           </>
         )}
         
-        {activeTab === 'onboarding' && <OnboardingModule user={user} token={token} />}
+        {activeTab === 'onboarding' && user.role !== 'hr' && <OnboardingModule user={user} token={token} />}
         {activeTab === 'payroll' && <PayrollModule user={user} token={token} />}
         {activeTab === 'performance' && <PerformanceModule user={user} token={token} />}
         {activeTab === 'attendance' && <AttendanceModule user={user} token={token} />}
@@ -589,7 +592,7 @@ const InternDashboard = ({ user, handlePhotoUpload, handleResumeUpload, uploadin
           </div>
         </div>
         <div className="stat-card" data-testid="performance-stat">
-          <div className="stat-icon purple">🎖️</div>
+          <div className="stat-icon purple">🏆</div>
           <div className="stat-info">
             <p className="stat-label">Performance Score</p>
             <h3 className="stat-value">85%</h3>
