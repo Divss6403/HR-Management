@@ -193,9 +193,9 @@ const AnalyticsModule = ({ users }) => {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="month" stroke="#6b7280" />
               <YAxis stroke="#6b7280" />
-              <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+              <Tooltip formatter={(value) => `₹${(value/100000).toFixed(1)}L`} />
               <Legend />
-              <Line type="monotone" dataKey="amount" stroke="#10b981" strokeWidth={3} name="Payroll ($)" />
+              <Line type="monotone" dataKey="amount" stroke="#10b981" strokeWidth={3} name="Payroll (₹)" />
               <Line type="monotone" dataKey="employees" stroke="#f59e0b" strokeWidth={2} name="Employee Count" />
             </LineChart>
           </ResponsiveContainer>
