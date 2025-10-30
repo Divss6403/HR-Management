@@ -311,7 +311,7 @@ const AnalyticsModule = ({ users }) => {
           </div>
           <div className="report-item">
             <span className="report-label">Total Payroll (Monthly):</span>
-            <span className="report-value">$152,000</span>
+            <span className="report-value">₹125.4 Lakhs</span>
           </div>
           <div className="report-item">
             <span className="report-label">Pending Leave Requests:</span>
