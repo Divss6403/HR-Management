@@ -31,12 +31,12 @@ const AnalyticsModule = ({ users }) => {
   ];
 
   const payrollSummary = [
-    { month: 'Jun', amount: 125000, employees: 33 },
-    { month: 'Jul', amount: 132000, employees: 34 },
-    { month: 'Aug', amount: 128000, employees: 34 },
-    { month: 'Sep', amount: 145000, employees: 35 },
-    { month: 'Oct', amount: 152000, employees: 35 },
-    { month: 'Nov', amount: 148000, employees: 35 }
+    { month: 'Jun', amount: 10312500, employees: 33 },
+    { month: 'Jul', amount: 10890000, employees: 34 },
+    { month: 'Aug', amount: 10560000, employees: 34 },
+    { month: 'Sep', amount: 11962500, employees: 35 },
+    { month: 'Oct', amount: 12540000, employees: 35 },
+    { month: 'Nov', amount: 12210000, employees: 35 }
   ];
 
   const leaveAnalysis = [
