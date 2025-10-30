@@ -83,7 +83,7 @@ const PayrollModule = ({ user, token }) => {
                 {payroll.payment_history.map((payment, index) => (
                   <tr key={index}>
                     <td>{new Date(payment.payment_date).toLocaleDateString()}</td>
-                    <td>${payment.amount}</td>
+                    <td>₹{(payment.amount * 82.5).toLocaleString('en-IN')}</td>
                     <td>
                       <span className={`status-badge ${payment.status.toLowerCase()}`}>
                         {payment.status}
