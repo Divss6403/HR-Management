@@ -107,6 +107,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  flex-shrink: 0; /* Prevent button from shrinking */
 }
 
 .logout-btn:hover {
