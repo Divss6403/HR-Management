@@ -205,10 +205,10 @@ const AnalyticsModule = ({ users }) => {
         <div className="analytics-card">
           <h3>🎯 Recruitment Funnel</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={recruitmentFunnel} layout="vertical">
+            <BarChart data={recruitmentFunnel} layout="vertical" margin={{ left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" stroke="#6b7280" />
-              <YAxis dataKey="stage" type="category" stroke="#6b7280" />
+              <YAxis dataKey="stage" type="category" stroke="#6b7280" width={100} />
               <Tooltip />
               <Bar dataKey="count" fill="#ec4899" />
             </BarChart>
