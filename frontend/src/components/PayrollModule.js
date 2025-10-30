@@ -52,7 +52,7 @@ const PayrollModule = ({ user, token }) => {
           </div>
           <div className="info-item">
             <span className="label">Amount:</span>
-            <span className="value amount">${payroll.amount}</span>
+            <span className="value amount">₹{(payroll.amount * 82.5).toLocaleString('en-IN')}</span>
           </div>
           <div className="info-item">
             <span className="label">Payment Schedule:</span>
